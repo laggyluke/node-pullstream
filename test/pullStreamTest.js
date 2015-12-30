@@ -258,6 +258,24 @@ tap.test("pipe with no length", function (t) {
   });
 });
 
+tap.test("pipe with zero length", function (t) {
+  t.plan(1);
+
+  var ps = new PullStream({ lowWaterMark: 0 });
+
+  var writableStream = new streamBuffers.WritableStreamBuffer({
+    initialSize: 100
+  });
+  writableStream.on('close', function () {
+    var str = writableStream.getContentsAsString('utf8');
+    t.equal(false, str);
+    t.end();
+  });
+
+  ps.write(new Buffer('Hello World!', 'utf8'));
+  ps.pipe(0, writableStream);
+});
+
 tap.test("emit error on calling write() after end", function (t) {
   t.plan(2);
 
